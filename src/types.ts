@@ -48,7 +48,7 @@ interface CustomCardEntry {
 export type VisualState =
     'cleaning' | 'docked' | 'returning' | 'paused' | 'error' | 'idle';
 
-export type CardAction = 'start' | 'pause' | 'return_to_base';
+export type CardAction = 'start' | 'pause' | 'return_to_base' | 'locate';
 
 export interface RoborockDetailDefinition {
     domain: string;

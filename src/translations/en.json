@@ -12,7 +12,8 @@
     "actions": {
         "start": "Start cleaning",
         "pause": "Pause",
-        "return_to_base": "Return to dock"
+        "return_to_base": "Return to dock",
+        "locate": "Find me"
     },
     "card": {
         "battery": "Battery",

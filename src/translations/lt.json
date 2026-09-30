@@ -12,7 +12,8 @@
     "actions": {
         "start": "Pradėti valyti",
         "pause": "Pauzė",
-        "return_to_base": "Grįžti į stotelę"
+        "return_to_base": "Grįžti į stotelę",
+        "locate": "Surask mane"
     },
     "card": {
         "battery": "Baterija",

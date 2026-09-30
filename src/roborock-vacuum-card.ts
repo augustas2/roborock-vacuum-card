@@ -427,6 +427,7 @@ export class RoborockVacuumCard extends LitElement {
             { action: 'start', feature: VacuumFeature.Start },
             { action: 'pause', feature: VacuumFeature.Pause },
             { action: 'return_to_base', feature: VacuumFeature.ReturnToBase },
+            { action: 'locate', feature: VacuumFeature.Locate },
         ];
 
         return allActions
@@ -440,7 +441,10 @@ export class RoborockVacuumCard extends LitElement {
                         type="button"
                         title=${label}
                         aria-label=${label}
-                        ?disabled=${this.isCallingService || actionDisabled(action, visualState)}
+                        ?disabled=${
+                            (action !== 'locate' && this.isCallingService) ||
+                            actionDisabled(action, visualState)
+                        }
                         @click=${(event: Event) => {
                             void this.callVacuumService(event, action, entityId);
                         }}
@@ -462,20 +466,24 @@ export class RoborockVacuumCard extends LitElement {
 
         if (!hass || !this.canCallVacuumService(action, entityId)) return;
 
-        this.pendingEntityState = hass.states[entityId]?.state;
-        this.isCallingService = true;
+        if (action !== 'locate') {
+            this.pendingEntityState = hass.states[entityId]?.state;
+            this.isCallingService = true;
+        }
 
         try {
             await hass.callService('vacuum', action, { entity_id: entityId });
         } catch (error) {
-            this.isCallingService = false;
-            this.pendingEntityState = undefined;
+            if (action !== 'locate') {
+                this.isCallingService = false;
+                this.pendingEntityState = undefined;
+            }
             throw error;
         }
     }
 
     private canCallVacuumService(action: CardAction, entityId: string): boolean {
-        if (!this.hass || this.isCallingService) return false;
+        if (!this.hass || (action !== 'locate' && this.isCallingService)) return false;
 
         const stateObj = this.hass.states[entityId];
 

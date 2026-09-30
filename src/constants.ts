@@ -19,11 +19,13 @@ export const ACTION_ICONS_MAP: Record<CardAction, string> = {
     start: 'mdi:play',
     pause: 'mdi:pause',
     return_to_base: 'mdi:home-import-outline',
+    locate: 'mdi:map-marker',
 };
 
 export const enum VacuumFeature {
     Pause = 4,
     ReturnToBase = 16,
+    Locate = 512,
     Start = 8192,
 }
 
@@ -31,6 +33,7 @@ export const ACTION_FEATURES: Record<CardAction, VacuumFeature> = {
     start: VacuumFeature.Start,
     pause: VacuumFeature.Pause,
     return_to_base: VacuumFeature.ReturnToBase,
+    locate: VacuumFeature.Locate,
 };
 
 export const DISABLED_BY_ACTION: Record<
@@ -41,6 +44,7 @@ export const DISABLED_BY_ACTION: Record<
     pause: (visualState) => visualState !== 'cleaning' && visualState !== 'returning',
     return_to_base: (visualState) =>
         visualState === 'docked' || visualState === 'returning',
+    locate: () => false,
 };
 
 export const ROBOROCK_STATUS_MAP: Partial<Record<string, VisualState>> = {

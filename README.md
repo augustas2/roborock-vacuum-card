@@ -12,7 +12,7 @@ A Home Assistant dashboard card for `vacuum.*` entities, designed for Roborock r
 - Static Roborock product image with subtle state-specific visual feedback
 - Battery level, relative last-changed time, cleaning details, and attention alerts
 - Optional vacuum name, battery, update time, and controls
-- Start, pause, and return-to-base controls based on the entity `supported_features` bit mask
+- Start, pause, return-to-base, and find-me controls based on the entity `supported_features` bit mask
 - Duplicate-command protection while Home Assistant processes a vacuum action
 - Visual editor and vacuum entity suggestion support
 - `prefers-reduced-motion` support
@@ -74,6 +74,7 @@ The card uses the standard Home Assistant vacuum services:
 | Start          | `vacuum.start`          | When the entity supports `Start` and is not cleaning or returning.      |
 | Pause          | `vacuum.pause`          | When the entity supports `Pause` and is cleaning or returning.          |
 | Return to base | `vacuum.return_to_base` | When the entity supports `ReturnToBase` and is not docked or returning. |
+| Find me        | `vacuum.locate`         | When the entity supports `Locate`; available in every vacuum state.     |
 
 Controls are disabled while a command is pending, then re-enabled after Home Assistant reports an entity state change. A failed service call re-enables them immediately.
 
