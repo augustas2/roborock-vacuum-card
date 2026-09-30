@@ -1,0 +1,33 @@
+{
+    "common": {
+        "entity": "Robotinis dulkių siurblys",
+        "name": "Pavadinimas",
+        "color": "Akcento spalva"
+    },
+    "config": {
+        "show_battery": "Rodyti bateriją",
+        "show_last_changed": "Rodyti paskutinį pokytį",
+        "show_controls": "Rodyti valdymo mygtukus",
+        "show_name": "Rodyti pavadinimą",
+        "color_description": "Akcento spalva, pvz. var(--primary-color)"
+    },
+    "actions": {
+        "start": "Pradėti valyti",
+        "pause": "Pauzė",
+        "return_to_base": "Grįžti į stotelę"
+    },
+    "card": {
+        "battery": "Baterija",
+        "open_more_info": "Atidaryti {name}",
+        "entity_not_found": "Entity nerastas",
+        "just_now": "Ką tik",
+        "minutes_ago": "Prieš {count} min.",
+        "hours_ago": "Prieš {count} val.",
+        "days_ago": "Prieš {count} d.",
+        "vacuum_image": "Robotinis dulkių siurblys"
+    },
+    "errors": {
+        "entity_required": "Reikia nurodyti vacuum entity",
+        "invalid_entity": "Ši kortelė skirta tik vacuum.* entity"
+    }
+}

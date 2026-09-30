@@ -1,0 +1,44 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" class="vacuum-svg" aria-hidden="true">
+    <circle cx="120" cy="120" r="110" class="glow" fill="var(--vacuum-color)" opacity="0.06" />
+    <g class="vacuum-body-rotate">
+        <g class="vacuum-body">
+            <g class="brush brush-right">
+                <g class="brush-spokes">
+                    <line x1="174" y1="76" x2="174" y2="64" stroke="var(--vacuum-color)" stroke-width="1.2" stroke-linecap="round" opacity="0.5" />
+                    <line x1="174" y1="76" x2="174" y2="88" stroke="var(--vacuum-color)" stroke-width="1.2" stroke-linecap="round" opacity="0.5" />
+                    <line x1="174" y1="76" x2="162" y2="76" stroke="var(--vacuum-color)" stroke-width="1.2" stroke-linecap="round" opacity="0.5" />
+                    <line x1="174" y1="76" x2="186" y2="76" stroke="var(--vacuum-color)" stroke-width="1.2" stroke-linecap="round" opacity="0.5" />
+                </g>
+                <circle cx="174" cy="76" r="2" fill="var(--vacuum-color)" opacity="0.5" />
+            </g>
+            <circle cx="120" cy="120" r="72" fill="var(--card-background-color, #fff)" stroke="var(--vacuum-color)" stroke-width="2" />
+            <circle cx="120" cy="120" r="66" fill="none" stroke="var(--vacuum-color)" stroke-width="0.8" opacity="0.2" />
+            <path d="M 60 94 A 68 68 0 0 1 180 94" fill="none" stroke="var(--vacuum-color)" stroke-width="3" stroke-linecap="round" class="bumper" />
+            <g class="nav-lines" opacity="0.15">
+                <line x1="120" y1="56" x2="120" y2="74" stroke="var(--vacuum-color)" stroke-width="1.5" />
+                <line x1="88" y1="63" x2="96" y2="78" stroke="var(--vacuum-color)" stroke-width="1.5" />
+                <line x1="152" y1="63" x2="144" y2="78" stroke="var(--vacuum-color)" stroke-width="1.5" />
+            </g>
+            <circle cx="120" cy="108" r="14" fill="var(--card-background-color, #fff)" stroke="var(--vacuum-color)" stroke-width="2" class="lidar-housing" />
+            <circle cx="120" cy="108" r="9" fill="none" stroke="var(--vacuum-color)" stroke-width="0.8" opacity="0.25" />
+            <circle cx="120" cy="140" r="8" fill="var(--vacuum-color)" opacity="0.08" class="power-ring" />
+            <circle cx="120" cy="140" r="4" fill="var(--vacuum-color)" opacity="0.25" class="power-dot" />
+        </g>
+    </g>
+    <g class="particles">
+        <circle class="particle p1" cx="120" cy="120" r="2" fill="var(--vacuum-color)" />
+        <circle class="particle p2" cx="120" cy="120" r="1.5" fill="var(--vacuum-color)" />
+        <circle class="particle p3" cx="120" cy="120" r="1.5" fill="var(--vacuum-color)" />
+        <circle class="particle p4" cx="120" cy="120" r="2" fill="var(--vacuum-color)" />
+        <circle class="particle p5" cx="120" cy="120" r="1.5" fill="var(--vacuum-color)" />
+        <circle class="particle p6" cx="120" cy="120" r="1.5" fill="var(--vacuum-color)" />
+        <circle class="particle p7" cx="120" cy="120" r="1" fill="var(--vacuum-color)" />
+        <circle class="particle p8" cx="120" cy="120" r="1" fill="var(--vacuum-color)" />
+    </g>
+    <g class="dock-indicator">
+        <rect x="76" y="188" width="88" height="28" rx="8" fill="var(--card-background-color, #fff)" stroke="var(--vacuum-color)" stroke-width="2" />
+    </g>
+    <g class="return-path">
+        <polygon points="120,220 110,206 130,206" fill="var(--vacuum-color)" stroke="var(--vacuum-color)" stroke-width="2" stroke-linejoin="round" opacity="0.55" />
+    </g>
+</svg>

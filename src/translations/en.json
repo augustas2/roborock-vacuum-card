@@ -1,0 +1,33 @@
+{
+    "common": {
+        "entity": "Robot vacuum",
+        "name": "Name",
+        "color": "Accent color"
+    },
+    "config": {
+        "show_battery": "Show battery",
+        "show_last_changed": "Show last changed",
+        "show_controls": "Show controls",
+        "show_name": "Show name",
+        "color_description": "Accent color, e.g. var(--primary-color)"
+    },
+    "actions": {
+        "start": "Start cleaning",
+        "pause": "Pause",
+        "return_to_base": "Return to dock"
+    },
+    "card": {
+        "battery": "Battery",
+        "open_more_info": "Open {name}",
+        "entity_not_found": "Entity not found",
+        "just_now": "just now",
+        "minutes_ago": "{count} min. ago",
+        "hours_ago": "{count} hr. ago",
+        "days_ago": "{count} d. ago",
+        "vacuum_image": "Robot vacuum"
+    },
+    "errors": {
+        "entity_required": "A vacuum entity is required",
+        "invalid_entity": "This card only supports vacuum.* entities"
+    }
+}
