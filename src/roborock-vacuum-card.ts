@@ -58,27 +58,37 @@ const supportedFeatures = (stateObj: HassEntity | undefined): number => {
 const hasFeature = (stateObj: HassEntity | undefined, feature: VacuumFeature): boolean =>
     (supportedFeatures(stateObj) & feature) !== 0;
 
-const batteryIcon = (battery: number): string => {
-    if (battery <= 5) return 'mdi:battery-outline';
+const batteryIcon = (battery: number, isCharging: boolean): string => {
+    if (battery <= 5) {
+        return isCharging ? 'mdi:battery-charging-outline' : 'mdi:battery-outline';
+    }
 
-    if (battery >= 95) return 'mdi:battery';
+    const level = Math.round(battery / 10) * 10;
 
-    const level = Math.ceil(battery / 10) * 10;
+    return `mdi:battery${isCharging ? '-charging' : ''}-${String(level)}`;
+};
 
-    return `mdi:battery-${String(level)}`;
+const numericValue = (value: unknown): number | undefined => {
+    if (typeof value !== 'number' && typeof value !== 'string') return undefined;
+
+    const number = Number(value);
+
+    return Number.isFinite(number) ? number : undefined;
 };
 
 const batteryLevel = (
     stateObj: HassEntity | undefined,
     batterySensor: HassEntity | undefined,
 ): number | undefined => {
-    const sensorValue = Number(entityState(batterySensor));
-    const battery =
-        stateObj?.attributes.battery ??
-        stateObj?.attributes.battery_level ??
-        (Number.isNaN(sensorValue) ? undefined : sensorValue);
+    const battery = [
+        stateObj?.attributes.battery,
+        stateObj?.attributes.battery_level,
+        entityState(batterySensor),
+    ]
+        .map(numericValue)
+        .find((value) => value !== undefined);
 
-    if (typeof battery !== 'number' || Number.isNaN(battery)) return undefined;
+    if (battery === undefined) return undefined;
 
     return Math.max(0, Math.min(100, Math.round(battery)));
 };
@@ -240,18 +250,18 @@ export class RoborockVacuumCard extends LitElement {
         const visualState = status
             ? (ROBOROCK_STATUS_MAP[status] ?? 'idle')
             : computeVisualState(stateObj);
+        const isCharging = status === 'charging' || stateObj?.state === 'charging';
         const battery = batteryLevel(stateObj, batterySensor);
         const details = entityId ? this.getRoborockDetails(entityId) : [];
         const attention = entityId ? this.getRoborockAttention(entityId) : [];
         const name = this.config?.name ?? stateObj?.attributes.friendly_name ?? entityId;
-        const displayState = statusSensor ?? stateObj;
         const stateText =
-            this.hass && displayState
+            this.hass && stateObj
                 ? (
                       this.hass as HomeAssistant & {
                           formatEntityState(stateObj: HassEntity, state?: string): string;
                       }
-                  ).formatEntityState(displayState)
+                  ).formatEntityState(stateObj)
                 : localize('card.entity_not_found', this.hass?.language);
         const lastChanged = formatRelativeTime(
             stateObj?.last_changed,
@@ -275,7 +285,9 @@ export class RoborockVacuumCard extends LitElement {
                                       class="battery"
                                       title=${localize('card.battery', this.hass?.language)}
                                   >
-                                      <ha-icon icon=${batteryIcon(battery)}></ha-icon>
+                                      <ha-icon
+                                          icon=${batteryIcon(battery, isCharging)}
+                                      ></ha-icon>
                                       <span>${battery}%</span>
                                   </div>`
                                 : html`<span></span>`

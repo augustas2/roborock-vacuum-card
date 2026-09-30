@@ -38,6 +38,7 @@ export const cardStyles = css`
     .battery ha-icon {
         --mdc-icon-size: 18px;
     }
+
     .state-text {
         font-style: normal;
         font-weight: var(--ha-font-weight-normal, 400);
