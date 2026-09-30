@@ -1,94 +1,50 @@
 # Roborock Vacuum Card
 
-Home Assistant Lovelace custom card for `vacuum.*` entities. It is built with **Lit + TypeScript + Vite** and includes an animated Roborock-style vacuum SVG.
+[![Release](https://github.com/augustas2/roborock-vacuum-card/actions/workflows/release.yml/badge.svg)](https://github.com/augustas2/roborock-vacuum-card/actions/workflows/release.yml)
+
+A Home Assistant dashboard card for `vacuum.*` entities, designed for Roborock robot vacuums. It shows the current vacuum state, battery level, update time, Roborock-specific cleaning details and attention alerts, product image, and state-aware controls.
+
+![Roborock Vacuum Card](https://raw.githubusercontent.com/augustas2/roborock-vacuum-card/main/src/assets/roborock-vacuum.png)
 
 ## Features
 
-- Big state text, such as `Docked`, `Cleaning`, and `Returning`.
-- Battery level in the top-left corner.
-- Animated vacuum SVG below the state text.
-- Friendly name below the illustration.
-- Start, pause, and return-to-dock buttons based on the entity `supported_features` bit mask.
-- Home Assistant visual editor support through `getConfigForm()`.
-- Home Assistant 2026.6+ entity suggestion support through `window.customCards.getEntitySuggestion()`.
-- `prefers-reduced-motion` support.
+- Localized English and Lithuanian interface
+- Static Roborock product image with subtle state-specific visual feedback
+- Battery level, relative last-changed time, cleaning details, and attention alerts
+- Optional vacuum name, battery, update time, and controls
+- Start, pause, and return-to-base controls based on the entity `supported_features` bit mask
+- Duplicate-command protection while Home Assistant processes a vacuum action
+- Visual editor and vacuum entity suggestion support
+- `prefers-reduced-motion` support
 
-## Project structure
+## Installation
 
-```text
-roborock-vacuum-card/
-├─ src/
-│  ├─ roborock-vacuum-card.ts
-│  └─ types.ts
-├─ package.json
-├─ tsconfig.json
-├─ vite.config.ts
-├─ eslint.config.js
-├─ .prettierrc.json
-├─ .gitignore
-├─ hacs.json
-└─ README.md
-```
+### HACS
 
-## Development in IntelliJ IDEA
+1. In HACS, open **Dashboard** and choose **Download repositories**.
+2. Search for **Roborock Vacuum Card**. Until it is included in the default HACS repository, add `augustas2/roborock-vacuum-card` as a custom repository with the **Dashboard** category.
+3. Download the card.
+4. Add the dashboard resource if HACS does not add it automatically:
 
-1. Open the `roborock-vacuum-card` folder in IntelliJ IDEA.
-2. Use Node.js 20+.
-3. Install dependencies:
+    ```yaml
+    url: /hacsfiles/roborock-vacuum-card/roborock-vacuum-card.js
+    type: module
+    ```
 
-```bash
-npm install
-```
+### Manual installation
 
-4. Run checks:
+1. Download `roborock-vacuum-card.js` from the latest release.
+2. Copy it to `/config/www/roborock-vacuum-card.js`.
+3. Add the dashboard resource:
 
-```bash
-npm run typecheck
-npm run lint
-npm run format:check
-npm run check
-```
+    ```yaml
+    url: /local/roborock-vacuum-card.js
+    type: module
+    ```
 
-5. Start dev server:
+Refresh the browser after installing or updating the resource.
 
-```bash
-npm run dev
-```
-
-6. Build production file:
-
-```bash
-npm run build
-```
-
-The build output will be:
-
-```text
-dist/roborock-vacuum-card.js
-```
-
-## Install in Home Assistant
-
-Copy this file:
-
-```text
-dist/roborock-vacuum-card.js
-```
-
-to:
-
-```text
-/config/www/roborock-vacuum-card.js
-```
-
-Then add a dashboard resource:
-
-```yaml
-url: /local/roborock-vacuum-card.js
-type: module
-```
-
-## Lovelace YAML example
+## Configuration
 
 ```yaml
 type: custom:roborock-vacuum-card
@@ -100,32 +56,25 @@ show_controls: true
 show_name: true
 ```
 
-For a Roborock vacuum, use:
+| Option              | Required | Description                                                              |
+| ------------------- | -------- | ------------------------------------------------------------------------ |
+| `entity`            | Yes      | A `vacuum.*` entity.                                                     |
+| `name`              | No       | Name shown below the vacuum image. Defaults to the entity friendly name. |
+| `show_battery`      | No       | Shows the battery level. Defaults to `true`.                             |
+| `show_last_changed` | No       | Shows the relative last-changed time. Defaults to `true`.                |
+| `show_controls`     | No       | Shows vacuum control buttons. Defaults to `true`.                        |
+| `show_name`         | No       | Shows the vacuum name. Defaults to `true`.                               |
 
-```yaml
-type: custom:roborock-vacuum-card
-entity: vacuum.roborock_qrevo_edge_series
-name: Roborock Qrevo Edge Series
-```
+## Controls and states
 
-## Optional config
+The card uses the standard Home Assistant vacuum services:
 
-| Option              | Type    | Default              | Description                                                  |
-| ------------------- | ------- | -------------------- | ------------------------------------------------------------ |
-| `entity`            | string  | required             | Must be a `vacuum.*` entity.                                 |
-| `name`              | string  | entity friendly name | Card name under SVG.                                         |
-| `show_battery`      | boolean | `true`               | Shows battery in top-left corner.                            |
-| `show_last_changed` | boolean | `true`               | Shows relative last changed time.                            |
-| `show_controls`     | boolean | `true`               | Shows start/pause/return-to-dock buttons.                    |
-| `show_name`         | boolean | `true`               | Shows friendly name under SVG.                               |
-| `color`             | string  | state-based          | CSS color or HA theme variable, e.g. `var(--primary-color)`. |
+| Action         | Service                 | Availability                                                            |
+| -------------- | ----------------------- | ----------------------------------------------------------------------- |
+| Start          | `vacuum.start`          | When the entity supports `Start` and is not cleaning or returning.      |
+| Pause          | `vacuum.pause`          | When the entity supports `Pause` and is cleaning or returning.          |
+| Return to base | `vacuum.return_to_base` | When the entity supports `ReturnToBase` and is not docked or returning. |
 
-## Services used
+Controls are disabled while a command is pending, then re-enabled after Home Assistant reports an entity state change. A failed service call re-enables them immediately.
 
-The action buttons call standard Home Assistant services:
-
-- `vacuum.start`
-- `vacuum.pause`
-- `vacuum.return_to_base`
-
-They are shown only when the entity reports the matching `supported_features` flag.
+Visual feedback is deliberately understated: cleaning and returning have gentle motion, paused and error states show a centered state indicator, and docked is static. All animation is disabled when the user enables reduced motion.

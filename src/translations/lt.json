@@ -1,15 +1,13 @@
 {
     "common": {
         "entity": "Robotinis dulkių siurblys",
-        "name": "Pavadinimas",
-        "color": "Akcento spalva"
+        "name": "Pavadinimas"
     },
     "config": {
         "show_battery": "Rodyti bateriją",
         "show_last_changed": "Rodyti paskutinį pokytį",
         "show_controls": "Rodyti valdymo mygtukus",
-        "show_name": "Rodyti pavadinimą",
-        "color_description": "Akcento spalva, pvz. var(--primary-color)"
+        "show_name": "Rodyti pavadinimą"
     },
     "actions": {
         "start": "Pradėti valyti",

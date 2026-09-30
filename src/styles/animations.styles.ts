@@ -1,10 +1,6 @@
 import { css } from 'lit';
 
 export const animationStyles = css`
-    :is(.cleaning, .returning) .vacuum-image {
-        animation: vacuum-drive 1.8s ease-in-out infinite;
-    }
-
     .cleaning::before {
         animation: state-glow 2.4s ease-in-out infinite;
     }
@@ -16,19 +12,6 @@ export const animationStyles = css`
     }
     .state-indicator {
         animation: state-indicator-pulse 2.2s ease-in-out infinite;
-    }
-
-    @keyframes vacuum-drive {
-        0%,
-        100% {
-            transform: translate3d(0, 0, 0) rotate(0deg);
-        }
-        25% {
-            transform: translate3d(2px, -3px, 0) rotate(0.3deg);
-        }
-        75% {
-            transform: translate3d(-2px, -2px, 0) rotate(-0.3deg);
-        }
     }
 
     @keyframes state-glow {

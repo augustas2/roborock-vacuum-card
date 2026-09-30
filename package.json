@@ -1,7 +1,7 @@
 {
     "name": "roborock-vacuum-card",
     "version": "0.1.0",
-    "description": "Home Assistant Lovelace card for vacuum entities with an animated Roborock vacuum SVG and controls.",
+    "description": "Home Assistant Lovelace custom card for Roborock vacuum entities.",
     "type": "module",
     "main": "dist/roborock-vacuum-card.js",
     "module": "dist/roborock-vacuum-card.js",

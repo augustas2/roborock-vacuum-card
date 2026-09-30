@@ -7,18 +7,18 @@ import {
     type TemplateResult,
 } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { styleMap } from 'lit/directives/style-map.js';
 import type { HomeAssistant } from 'custom-card-helpers';
 import { getCurrentDocumentLanguage, localize } from './translations/localize';
 import vacuumImage from './assets/roborock-vacuum.png';
 import { animationStyles, cardStyles } from './styles';
 import {
     ACTION_ICONS_MAP,
+    ACTION_FEATURES,
     CARD_TYPE,
-    ENTITY_STATE_MAP,
+    DISABLED_BY_ACTION,
+    ROBOROCK_STATUS_MAP,
+    STATE_MAP,
     VacuumFeature,
-    visualStateColors,
-    RAW_STATE_MAP,
 } from './constants';
 import type {
     CardAction,
@@ -27,54 +27,16 @@ import type {
     VisualState,
 } from './types';
 
-const disabledByAction: Record<CardAction, (visualState: VisualState) => boolean> = {
-    start: (visualState) => visualState === 'cleaning' || visualState === 'returning',
-    pause: (visualState) => visualState !== 'cleaning' && visualState !== 'returning',
-    return_to_base: (visualState) =>
-        visualState === 'docked' || visualState === 'returning',
-};
-
-const actionFeatures: Record<CardAction, VacuumFeature> = {
-    start: VacuumFeature.Start,
-    pause: VacuumFeature.Pause,
-    return_to_base: VacuumFeature.ReturnToBase,
-};
-
 const computeVisualState = (stateObj: HassEntity | undefined): VisualState => {
     if (!stateObj) return 'idle';
 
     const rawState = stateObj.attributes.metrics?.raw_state;
 
     return (
-        ENTITY_STATE_MAP[stateObj.state] ??
-        (typeof rawState === 'string' ? RAW_STATE_MAP[rawState] : undefined) ??
+        STATE_MAP[stateObj.state] ??
+        (typeof rawState === 'string' ? STATE_MAP[rawState] : undefined) ??
         'idle'
     );
-};
-
-const ROBOROCK_STATUS_MAP: Partial<Record<string, VisualState>> = {
-    cleaning: 'cleaning',
-    spot_cleaning: 'cleaning',
-    zoned_cleaning: 'cleaning',
-    segment_cleaning: 'cleaning',
-    mapping: 'cleaning',
-    robot_status_mopping: 'cleaning',
-    clean_mop_cleaning: 'cleaning',
-    clean_mop_mopping: 'cleaning',
-    segment_mopping: 'cleaning',
-    zoned_mopping: 'cleaning',
-    returning_home: 'returning',
-    docking: 'returning',
-    going_to_target: 'returning',
-    going_to_wash_the_mop: 'returning',
-    back_to_dock_washing_duster: 'returning',
-    paused: 'paused',
-    error: 'error',
-    charging_problem: 'error',
-    docked: 'docked',
-    charging: 'docked',
-    charging_complete: 'docked',
-    idle: 'idle',
 };
 
 const relatedEntityId = (entityId: string, domain: string, suffix: string): string =>
@@ -164,7 +126,7 @@ const actionLabel = (action: CardAction, language?: string): string =>
 const actionDisabled = (action: CardAction, visualState: VisualState): boolean => {
     if (visualState === 'idle') return true;
 
-    return disabledByAction[action](visualState);
+    return DISABLED_BY_ACTION[action](visualState);
 };
 
 const openMoreInfo = (element: HTMLElement, entityId: string): void => {
@@ -247,7 +209,6 @@ export class RoborockVacuumCard extends LitElement {
                 { name: 'show_last_changed', selector: { boolean: {} } },
                 { name: 'show_controls', selector: { boolean: {} } },
                 { name: 'show_name', selector: { boolean: {} } },
-                { name: 'color', selector: { text: {} } },
             ],
             computeLabel: (schema: { name: string }): string => {
                 const translationKeys: Record<string, string> = {
@@ -257,7 +218,6 @@ export class RoborockVacuumCard extends LitElement {
                     show_last_changed: 'config.show_last_changed',
                     show_controls: 'config.show_controls',
                     show_name: 'config.show_name',
-                    color: 'config.color_description',
                 };
 
                 const translationKey = translationKeys[schema.name];
@@ -297,10 +257,9 @@ export class RoborockVacuumCard extends LitElement {
             stateObj?.last_changed,
             this.hass?.language,
         );
-        const color = this.config?.color ?? this.computeStateColor(visualState);
 
         return html`
-            <ha-card style=${styleMap({ '--vacuum-color': color })}>
+            <ha-card>
                 <button
                     class="content"
                     type="button"
@@ -354,10 +313,6 @@ export class RoborockVacuumCard extends LitElement {
                 }
             </ha-card>
         `;
-    }
-
-    private computeStateColor(visualState: VisualState): string {
-        return visualStateColors[visualState];
     }
 
     private getRoborockDetails(entityId: string): string[] {
@@ -489,7 +444,7 @@ export class RoborockVacuumCard extends LitElement {
         const stateObj = this.hass.states[entityId];
 
         return (
-            hasFeature(stateObj, actionFeatures[action]) &&
+            hasFeature(stateObj, ACTION_FEATURES[action]) &&
             !actionDisabled(action, computeVisualState(stateObj))
         );
     }
@@ -540,7 +495,7 @@ window.customCards.push({
     name: 'Roborock Vacuum Card',
     preview: true,
     description:
-        'Vacuum card with battery, translated state, a static product image and controls.',
+        'Roborock vacuum card with battery, translated state, static product image and controls.',
     documentationURL: 'https://github.com/augustas2/roborock-vacuum-card',
     getEntitySuggestion: (_hass: HomeAssistant, entityId: string) => {
         if (!entityId.startsWith('vacuum.')) return null;
