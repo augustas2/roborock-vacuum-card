@@ -6,7 +6,7 @@ export const cardStyles = css`
     }
 
     ha-card {
-        overflow: hidden;
+        overflow: visible;
         color: var(--primary-text-color, #212121);
     }
 
@@ -248,7 +248,7 @@ export const cardStyles = css`
 
     .dock-menu {
         position: absolute;
-        z-index: 1;
+        z-index: 10;
         right: 0;
         bottom: calc(100% + var(--ha-space-2, 8px));
         display: grid;
