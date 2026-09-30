@@ -72,6 +72,12 @@ export const ROBOROCK_DETAILS: RoborockDetailDefinition[] = [
     { domain: 'sensor', suffix: 'current_room', icon: 'mdi:door', labelKey: 'room' },
     {
         domain: 'sensor',
+        suffix: 'cleaning_area',
+        icon: 'mdi:texture-box',
+        labelKey: 'area',
+    },
+    {
+        domain: 'sensor',
         suffix: 'cleaning_progress',
         icon: 'mdi:progress-clock',
         labelKey: 'progress',
