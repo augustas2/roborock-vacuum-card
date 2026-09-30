@@ -86,6 +86,10 @@ const batteryIcon = (battery: number, isCharging: boolean): string => {
 
     const level = Math.round(battery / 10) * 10;
 
+    if (level === 100) {
+        return isCharging ? 'mdi:battery-charging' : 'mdi:battery';
+    }
+
     return `mdi:battery${isCharging ? '-charging' : ''}-${String(level)}`;
 };
 
