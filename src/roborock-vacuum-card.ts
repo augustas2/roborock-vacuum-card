@@ -185,7 +185,15 @@ export class RoborockVacuumCard extends LitElement {
     private pendingEntityState: string | undefined;
 
     private readonly closeDockMenuOnOutsideClick = (event: PointerEvent): void => {
-        if (this.showDockActions && !event.composedPath().includes(this)) {
+        const isInsideDockMenu = event
+            .composedPath()
+            .some(
+                (element) =>
+                    element instanceof HTMLElement &&
+                    element.classList.contains('dock-menu-trigger'),
+            );
+
+        if (this.showDockActions && !isInsideDockMenu) {
             this.showDockActions = false;
         }
     };
