@@ -50,6 +50,19 @@ export type VisualState =
 
 export type CardAction = 'start' | 'pause' | 'return_to_base';
 
+export interface RoborockDetailDefinition {
+    domain: string;
+    suffix: string;
+    icon: string;
+    labelKey: string;
+}
+
+export interface RoborockAttentionDefinition extends RoborockDetailDefinition {
+    severity: 'warning' | 'error';
+    activeState?: string;
+    inactiveStates?: string[];
+}
+
 declare global {
     interface Window {
         customCards?: CustomCardEntry[];

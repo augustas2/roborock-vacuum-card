@@ -1,6 +1,6 @@
 {
     "common": {
-        "entity": "Robotinis dulkių siurblys",
+        "entity": "Robotas siurblys",
         "name": "Pavadinimas"
     },
     "config": {
@@ -22,7 +22,19 @@
         "minutes_ago": "Prieš {count} min.",
         "hours_ago": "Prieš {count} val.",
         "days_ago": "Prieš {count} d.",
-        "vacuum_image": "Robotinis dulkių siurblys"
+        "vacuum_image": "Robotas siurblys"
+    },
+    "details": {
+        "room": "Kambarys",
+        "progress": "Progresas",
+        "time": "Laikas"
+    },
+    "attention": {
+        "vacuum_error": "Siurblio klaida: {value}",
+        "dock_error": "Stotelės klaida: {value}",
+        "water_shortage": "Trūksta vandens",
+        "empty_dirty_water": "Ištuštinkite nešvaraus vandens talpą",
+        "fill_clean_water": "Pripildykite švaraus vandens talpą"
     },
     "errors": {
         "entity_required": "Reikia nurodyti vacuum entity",

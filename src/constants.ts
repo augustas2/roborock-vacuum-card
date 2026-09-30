@@ -1,4 +1,9 @@
-import type { CardAction, VisualState } from './types';
+import type {
+    CardAction,
+    RoborockAttentionDefinition,
+    RoborockDetailDefinition,
+    VisualState,
+} from './types';
 
 export const CARD_TYPE = 'roborock-vacuum-card';
 
@@ -62,3 +67,62 @@ export const ROBOROCK_STATUS_MAP: Partial<Record<string, VisualState>> = {
     charging_complete: 'docked',
     idle: 'idle',
 };
+
+export const ROBOROCK_DETAILS: RoborockDetailDefinition[] = [
+    { domain: 'sensor', suffix: 'current_room', icon: 'mdi:door', labelKey: 'room' },
+    {
+        domain: 'sensor',
+        suffix: 'cleaning_progress',
+        icon: 'mdi:progress-clock',
+        labelKey: 'progress',
+    },
+    {
+        domain: 'sensor',
+        suffix: 'cleaning_time',
+        icon: 'mdi:timer-outline',
+        labelKey: 'time',
+    },
+];
+
+export const ROBOROCK_ATTENTION: RoborockAttentionDefinition[] = [
+    {
+        domain: 'sensor',
+        suffix: 'vacuum_error',
+        icon: 'mdi:robot-vacuum-alert',
+        labelKey: 'vacuum_error',
+        severity: 'error',
+        inactiveStates: ['none'],
+    },
+    {
+        domain: 'sensor',
+        suffix: 'dock_dock_error',
+        icon: 'mdi:alert-octagon-outline',
+        labelKey: 'dock_error',
+        severity: 'error',
+        inactiveStates: ['ok'],
+    },
+    {
+        domain: 'binary_sensor',
+        suffix: 'water_shortage',
+        icon: 'mdi:water-alert',
+        labelKey: 'water_shortage',
+        severity: 'warning',
+        activeState: 'on',
+    },
+    {
+        domain: 'binary_sensor',
+        suffix: 'dock_dirty_water_box',
+        icon: 'mdi:water-remove-outline',
+        labelKey: 'empty_dirty_water',
+        severity: 'warning',
+        activeState: 'on',
+    },
+    {
+        domain: 'binary_sensor',
+        suffix: 'dock_clean_water_box',
+        icon: 'mdi:water-plus-outline',
+        labelKey: 'fill_clean_water',
+        severity: 'warning',
+        activeState: 'on',
+    },
+];

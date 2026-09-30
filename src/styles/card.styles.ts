@@ -4,10 +4,12 @@ export const cardStyles = css`
     :host {
         display: block;
     }
+    
     ha-card {
         overflow: hidden;
         color: var(--primary-text-color, #212121);
     }
+    
     .content {
         appearance: none;
         border: 0;
@@ -22,12 +24,14 @@ export const cardStyles = css`
         text-align: center;
         font: inherit;
     }
+    
     .top-row {
         width: 100%;
         display: flex;
         align-items: center;
         min-height: 30px;
     }
+    
     .battery {
         display: inline-flex;
         align-items: center;
@@ -35,6 +39,7 @@ export const cardStyles = css`
         font-size: var(--ha-font-size-m, 16px);
         font-weight: var(--ha-font-weight-medium, 500);
     }
+    
     .battery ha-icon {
         --mdc-icon-size: 18px;
     }
@@ -45,9 +50,11 @@ export const cardStyles = css`
         font-size: clamp(22px, 4vw, 26px);
         line-height: var(--ha-line-height-condensed, 1.2);
     }
+    
     .state-text--error {
         color: var(--error-color, #db4437);
     }
+    
     .updated {
         margin-top: var(--ha-space-1, 4px);
         font-style: normal;
@@ -56,6 +63,68 @@ export const cardStyles = css`
         line-height: var(--ha-line-height-normal, 1.5);
         letter-spacing: 0.1px;
     }
+
+    .details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        width: 100%;
+        gap: var(--ha-space-2, 8px);
+        margin-top: var(--ha-space-3, 12px);
+    }
+
+    .detail {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        column-gap: var(--ha-space-2, 8px);
+        align-items: center;
+        padding: var(--ha-space-2, 8px);
+        border-radius: var(--ha-border-radius-md, 8px);
+        background: var(--secondary-background-color, rgb(127 127 127 / 8%));
+        text-align: left;
+    }
+
+    .detail ha-icon,
+    .attention ha-icon {
+        --mdc-icon-size: 20px;
+    }
+
+    .detail-label {
+        color: var(--secondary-text-color, #6b6f86);
+        font-size: var(--ha-font-size-s, 14px);
+    }
+
+    .detail-value {
+        grid-column: 2;
+        overflow: hidden;
+        font-size: var(--ha-font-size-m, 16px);
+        font-weight: var(--ha-font-weight-medium, 500);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .attention {
+        display: flex;
+        gap: var(--ha-space-2, 8px);
+        align-items: center;
+        width: 100%;
+        margin-top: var(--ha-space-3, 12px);
+        padding: var(--ha-space-2, 8px) var(--ha-space-3, 12px);
+        border-radius: var(--ha-border-radius-md, 8px);
+        font-size: var(--ha-font-size-m, 16px);
+        font-weight: var(--ha-font-weight-medium, 500);
+        text-align: left;
+    }
+
+    .attention--warning {
+        color: var(--warning-color, #f9a825);
+        background: color-mix(in srgb, var(--warning-color, #f9a825) 14%, transparent);
+    }
+
+    .attention--error {
+        color: var(--error-color, #db4437);
+        background: color-mix(in srgb, var(--error-color, #db4437) 12%, transparent);
+    }
+    
     .vacuum-image-wrap {
         width: min(100%, 300px);
         display: flex;
@@ -64,6 +133,7 @@ export const cardStyles = css`
         position: relative;
         isolation: isolate;
     }
+    
     .vacuum-image-wrap::before {
         content: '';
         position: absolute;
@@ -74,6 +144,7 @@ export const cardStyles = css`
         filter: blur(24px);
         opacity: 0;
     }
+    
     .vacuum-image {
         width: 100%;
         height: 100%;
@@ -81,6 +152,7 @@ export const cardStyles = css`
         filter: drop-shadow(0 14px 12px rgb(0 0 0 / 18%));
         transition: opacity 120ms ease-out;
     }
+    
     .state-indicator {
         --state-indicator-color: var(--state-inactive-color, #9e9e9e);
         position: absolute;
@@ -101,18 +173,22 @@ export const cardStyles = css`
             color-mix(in srgb, var(--state-indicator-color, #9e9e9e) 14%, transparent);
         backdrop-filter: blur(3px);
     }
+    
     .state-indicator--error {
         --state-indicator-color: var(--error-color, #db4437);
     }
+    
     .state-indicator ha-icon {
         --mdc-icon-size: 30px;
     }
+    
     .name {
         margin-bottom: var(--ha-space-3, 12px);
         font-size: var(--ha-font-size-l, 20px);
         line-height: 1.2;
         font-weight: var(--ha-font-weight-medium, 500);
     }
+    
     .actions {
         display: flex;
         gap: var(--ha-space-3, 12px);
@@ -120,6 +196,7 @@ export const cardStyles = css`
         padding: var(--ha-space-3, 12px) var(--ha-space-4, 16px) var(--ha-space-3, 12px);
         border-top: 1px solid var(--divider-color, rgba(0, 0, 0, 0.08));
     }
+    
     .action-button {
         appearance: none;
         border: 0;
@@ -135,13 +212,16 @@ export const cardStyles = css`
             opacity 120ms ease,
             background-color 120ms ease;
     }
+    
     .action-button:hover:not(:disabled) {
         background: color-mix(in srgb, var(--primary-color, #009ac7) 22%, transparent);
     }
+    
     .action-button:disabled {
         opacity: 0.35;
         cursor: not-allowed;
     }
+    
     .action-button ha-icon {
         --mdc-icon-size: 26px;
     }

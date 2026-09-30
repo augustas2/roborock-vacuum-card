@@ -16,6 +16,8 @@ import {
     ACTION_FEATURES,
     CARD_TYPE,
     DISABLED_BY_ACTION,
+    ROBOROCK_ATTENTION,
+    ROBOROCK_DETAILS,
     ROBOROCK_STATUS_MAP,
     STATE_MAP,
     VacuumFeature,
@@ -253,7 +255,7 @@ export class RoborockVacuumCard extends LitElement {
         const isCharging = status === 'charging' || stateObj?.state === 'charging';
         const battery = batteryLevel(stateObj, batterySensor);
         const details = entityId ? this.getRoborockDetails(entityId) : [];
-        const attention = entityId ? this.getRoborockAttention(entityId) : [];
+        const attention = entityId ? this.getRoborockAttention(entityId) : undefined;
         const name = this.config?.name ?? stateObj?.attributes.friendly_name ?? entityId;
         const stateText =
             this.hass && stateObj
@@ -299,22 +301,42 @@ export class RoborockVacuumCard extends LitElement {
                         ${stateText}
                     </div>
                     ${
-                        details.length
-                            ? html`<div class="updated">${details.join(' · ')}</div>`
+                        attention
+                            ? html`<div
+                                  class="attention attention--${attention.severity}"
+                              >
+                                  <ha-icon icon=${attention.icon}></ha-icon>
+                                  <span>${attention.message}</span>
+                              </div>`
                             : nothing
                     }
                     ${
-                        attention.length
-                            ? html`<div class="updated">⚠ ${attention.join(' · ')}</div>`
-                            : nothing
-                    }
-                    ${
-                        this.config?.show_last_changed !== false && lastChanged
+                        !attention &&
+                        this.config?.show_last_changed !== false &&
+                        lastChanged
                             ? html`<div class="updated">${lastChanged}</div>`
                             : nothing
                     }
                     ${this.renderVacuumImage(visualState)}
                     ${this.config?.show_name !== false ? html`<div class="name">${name}</div>` : nothing}
+                    ${
+                        details.length
+                            ? html`<div class="details">
+                                  ${details.map(
+                                      (detail) =>
+                                          html`<div class="detail">
+                                              <ha-icon icon=${detail.icon}></ha-icon>
+                                              <span class="detail-label"
+                                                  >${detail.label}</span
+                                              >
+                                              <span class="detail-value"
+                                                  >${detail.value}</span
+                                              >
+                                          </div>`,
+                                  )}
+                              </div>`
+                            : nothing
+                    }
                 </button>
                 ${
                     this.config?.show_controls !== false && entityId
@@ -327,71 +349,73 @@ export class RoborockVacuumCard extends LitElement {
         `;
     }
 
-    private getRoborockDetails(entityId: string): string[] {
+    private getRoborockDetails(
+        entityId: string,
+    ): { icon: string; label: string; value: string }[] {
         if (!this.hass) return [];
 
-        const sensors = [
-            { domain: 'sensor', suffix: 'current_room', label: 'Room' },
-            { domain: 'select', suffix: 'selected_map', label: 'Map' },
-            {
-                domain: 'sensor',
-                suffix: 'cleaning_progress',
-                label: 'Progress',
-                unit: '%',
-            },
-            { domain: 'sensor', suffix: 'cleaning_area', label: 'Area', unit: 'm²' },
-            { domain: 'sensor', suffix: 'cleaning_time', label: 'Time', unit: 'min' },
-        ];
+        return ROBOROCK_DETAILS.flatMap((detail) => {
+            const entity =
+                this.hass?.states[
+                    relatedEntityId(entityId, detail.domain, detail.suffix)
+                ];
 
-        return sensors.flatMap(({ domain, suffix, label, unit }) => {
-            const state = entityState(
-                this.hass?.states[relatedEntityId(entityId, domain, suffix)],
-            );
-
-            return state === undefined
+            return entityState(entity) === undefined
                 ? []
-                : [`${label}: ${state}${unit ? ` ${unit}` : ''}`];
+                : [
+                      {
+                          icon: detail.icon,
+                          label: localize(
+                              `details.${detail.labelKey}`,
+                              this.hass?.language,
+                          ),
+                          value: this.formatEntityState(entity),
+                      },
+                  ];
         });
     }
 
-    private getRoborockAttention(entityId: string): string[] {
-        if (!this.hass) return [];
+    private getRoborockAttention(
+        entityId: string,
+    ): { icon: string; message: string; severity: 'warning' | 'error' } | undefined {
+        if (!this.hass) return undefined;
 
-        const problems = [
-            {
-                domain: 'binary_sensor',
-                suffix: 'water_shortage',
-                label: 'Water shortage',
-            },
-            {
-                domain: 'binary_sensor',
-                suffix: 'dock_dirty_water_box',
-                label: 'Empty dirty water',
-            },
-            {
-                domain: 'binary_sensor',
-                suffix: 'dock_clean_water_box',
-                label: 'Fill clean water',
-            },
-        ];
-        const activeBinaryProblems = problems.flatMap(({ domain, suffix, label }) =>
-            entityState(this.hass?.states[relatedEntityId(entityId, domain, suffix)]) ===
-            'on'
-                ? [label]
-                : [],
-        );
-        const vacuumError = entityState(
-            this.hass.states[relatedEntityId(entityId, 'sensor', 'vacuum_error')],
-        );
-        const dockError = entityState(
-            this.hass.states[relatedEntityId(entityId, 'sensor', 'dock_dock_error')],
-        );
+        for (const attention of ROBOROCK_ATTENTION) {
+            const entity =
+                this.hass.states[
+                    relatedEntityId(entityId, attention.domain, attention.suffix)
+                ];
+            const state = entityState(entity);
+            const active = attention.activeState
+                ? state === attention.activeState
+                : state !== undefined && !attention.inactiveStates?.includes(state);
 
-        return [
-            ...activeBinaryProblems,
-            ...(vacuumError && vacuumError !== 'none' ? [`Vacuum: ${vacuumError}`] : []),
-            ...(dockError && dockError !== 'ok' ? [`Dock: ${dockError}`] : []),
-        ];
+            if (active) {
+                return {
+                    icon: attention.icon,
+                    severity: attention.severity,
+                    message: localize(
+                        `attention.${attention.labelKey}`,
+                        this.hass.language,
+                        {
+                            value: this.formatEntityState(entity),
+                        },
+                    ),
+                };
+            }
+        }
+
+        return undefined;
+    }
+
+    private formatEntityState(entity: HassEntity | undefined): string {
+        if (!this.hass || !entity) return '';
+
+        return (
+            this.hass as HomeAssistant & {
+                formatEntityState(entity: HassEntity, state?: string): string;
+            }
+        ).formatEntityState(entity);
     }
 
     private renderActions(

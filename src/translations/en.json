@@ -24,6 +24,18 @@
         "days_ago": "{count} d. ago",
         "vacuum_image": "Robot vacuum"
     },
+    "details": {
+        "room": "Room",
+        "progress": "Progress",
+        "time": "Time"
+    },
+    "attention": {
+        "vacuum_error": "Vacuum error: {value}",
+        "dock_error": "Dock error: {value}",
+        "water_shortage": "Water shortage",
+        "empty_dirty_water": "Empty the dirty-water tank",
+        "fill_clean_water": "Fill the clean-water tank"
+    },
     "errors": {
         "entity_required": "A vacuum entity is required",
         "invalid_entity": "This card only supports vacuum.* entities"
