@@ -209,12 +209,28 @@ export const cardStyles = css`
         place-items: center;
         cursor: pointer;
         transition:
+            transform 80ms ease,
             opacity 120ms ease,
             background-color 120ms ease;
     }
 
     .action-button:hover:not(:disabled) {
         background: color-mix(in srgb, var(--primary-color, #009ac7) 22%, transparent);
+    }
+
+    .action-button:active:not(:disabled) {
+        background: color-mix(in srgb, var(--primary-color, #009ac7) 36%, transparent);
+        transform: scale(0.94);
+    }
+
+    .action-button:focus-visible,
+    .dock-menu-action:focus-visible {
+        outline: 2px solid var(--primary-color, #009ac7);
+        outline-offset: 2px;
+    }
+
+    .action-button--active {
+        background: color-mix(in srgb, var(--primary-color, #009ac7) 28%, transparent);
     }
 
     .action-button:disabled {
@@ -224,5 +240,67 @@ export const cardStyles = css`
 
     .action-button ha-icon {
         --mdc-icon-size: 26px;
+    }
+
+    .dock-menu-trigger {
+        position: relative;
+    }
+
+    .dock-menu {
+        position: absolute;
+        z-index: 1;
+        right: 0;
+        bottom: calc(100% + var(--ha-space-2, 8px));
+        display: grid;
+        min-width: 220px;
+        padding: var(--ha-space-2, 8px);
+        border: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
+        border-radius: var(--ha-border-radius-lg, 12px);
+        background: var(--card-background-color, #fff);
+        box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+    }
+
+    .dock-menu-action {
+        appearance: none;
+        border: 0;
+        border-radius: var(--ha-border-radius-md, 8px);
+        background: transparent;
+        color: var(--primary-text-color, #212121);
+        display: flex;
+        gap: var(--ha-space-3, 12px);
+        align-items: center;
+        min-height: 44px;
+        padding: var(--ha-space-2, 8px);
+        cursor: pointer;
+        font: inherit;
+        text-align: left;
+    }
+
+    .dock-menu-action:hover:not(:disabled),
+    .dock-menu-action--active {
+        background: color-mix(in srgb, var(--primary-color, #009ac7) 14%, transparent);
+    }
+
+    .dock-menu-action:active:not(:disabled) {
+        background: color-mix(in srgb, var(--primary-color, #009ac7) 26%, transparent);
+    }
+
+    .dock-menu-action:disabled {
+        opacity: 0.6;
+        cursor: progress;
+    }
+
+    .dock-menu-action ha-icon {
+        --mdc-icon-size: 22px;
+    }
+
+    .dock-menu-action__loading {
+        animation: dock-action-loading 0.9s linear infinite;
+    }
+
+    @keyframes dock-action-loading {
+        to {
+            transform: rotate(360deg);
+        }
     }
 `;

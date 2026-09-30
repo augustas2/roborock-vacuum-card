@@ -15,6 +15,7 @@ import {
     ACTION_ICONS_MAP,
     ACTION_FEATURES,
     CARD_TYPE,
+    DOCK_ACTIONS,
     DISABLED_BY_ACTION,
     ROBOROCK_ATTENTION,
     ROBOROCK_DETAILS,
@@ -43,6 +44,24 @@ const computeVisualState = (stateObj: HassEntity | undefined): VisualState => {
 
 const relatedEntityId = (entityId: string, domain: string, suffix: string): string =>
     `${domain}.${entityId.slice('vacuum.'.length)}_${suffix}`;
+
+const relatedEntityIdBySuffix = (
+    hass: HomeAssistant | undefined,
+    entityId: string,
+    domain: string,
+    suffix: string,
+): string | undefined => {
+    if (!hass) return undefined;
+
+    const deviceSlug = entityId.slice('vacuum.'.length);
+
+    return Object.keys(hass.states).find(
+        (candidateId) =>
+            candidateId.startsWith(`${domain}.`) &&
+            candidateId.includes(`_${deviceSlug}_`) &&
+            candidateId.endsWith(`_${suffix}`),
+    );
+};
 
 const entityState = (stateObj: HassEntity | undefined): string | undefined => {
     if (!stateObj || ['unknown', 'unavailable'].includes(stateObj.state))
@@ -159,7 +178,17 @@ export class RoborockVacuumCard extends LitElement {
 
     @state() private isCallingService = false;
 
+    @state() private showDockActions = false;
+
+    @state() private pendingDockEntityIds: string[] = [];
+
     private pendingEntityState: string | undefined;
+
+    private readonly closeDockMenuOnOutsideClick = (event: PointerEvent): void => {
+        if (this.showDockActions && !event.composedPath().includes(this)) {
+            this.showDockActions = false;
+        }
+    };
 
     private static readonly DEFAULT_CONFIG = {
         show_battery: true,
@@ -183,6 +212,16 @@ export class RoborockVacuumCard extends LitElement {
             ...RoborockVacuumCard.DEFAULT_CONFIG,
             ...config,
         };
+    }
+
+    public override connectedCallback(): void {
+        super.connectedCallback();
+        document.addEventListener('pointerdown', this.closeDockMenuOnOutsideClick);
+    }
+
+    public override disconnectedCallback(): void {
+        document.removeEventListener('pointerdown', this.closeDockMenuOnOutsideClick);
+        super.disconnectedCallback();
     }
 
     public getCardSize(): number {
@@ -430,7 +469,7 @@ export class RoborockVacuumCard extends LitElement {
             { action: 'locate', feature: VacuumFeature.Locate },
         ];
 
-        return allActions
+        const vacuumActions = allActions
             .filter(({ feature }) => hasFeature(stateObj, feature))
             .map(({ action }) => {
                 const label = actionLabel(action, this.hass?.language);
@@ -453,6 +492,12 @@ export class RoborockVacuumCard extends LitElement {
                     </button>
                 `;
             });
+
+        const hasDockActions = this.getDockActions(entityId).length > 0;
+
+        return hasDockActions
+            ? [...vacuumActions, this.renderDockMenu(entityId)]
+            : vacuumActions;
     }
 
     private async callVacuumService(
@@ -479,6 +524,112 @@ export class RoborockVacuumCard extends LitElement {
                 this.pendingEntityState = undefined;
             }
             throw error;
+        }
+    }
+
+    private renderDockMenu(entityId: string): TemplateResult {
+        const label = localize('actions.more', this.hass?.language);
+
+        return html`
+            <div class="dock-menu-trigger">
+                <button
+                    class="action-button ${this.showDockActions ? 'action-button--active' : ''}"
+                    type="button"
+                    title=${label}
+                    aria-label=${label}
+                    aria-expanded=${String(this.showDockActions)}
+                    @click=${() => {
+                        this.showDockActions = !this.showDockActions;
+                    }}
+                >
+                    <ha-icon icon="mdi:dots-horizontal"></ha-icon>
+                </button>
+                ${
+                    this.showDockActions
+                        ? html`<div class="dock-menu" role="menu">
+                              ${this.renderDockActions(entityId)}
+                          </div>`
+                        : nothing
+                }
+            </div>
+        `;
+    }
+
+    private renderDockActions(entityId: string): TemplateResult[] {
+        return this.getDockActions(entityId).map(
+            ({ action, entityId: dockEntityId, isActive }) => {
+                const isPending = this.pendingDockEntityIds.includes(dockEntityId);
+                const label = localize(
+                    `actions.${isActive ? 'stop_' : ''}${action.labelKey}`,
+                    this.hass?.language,
+                );
+
+                return html`
+                    <button
+                        class="dock-menu-action ${isActive ? 'dock-menu-action--active' : ''}"
+                        type="button"
+                        title=${label}
+                        aria-label=${label}
+                        aria-busy=${String(isPending)}
+                        ?disabled=${isPending}
+                        @click=${(event: Event) => {
+                            void this.callSwitchService(event, dockEntityId, isActive);
+                        }}
+                    >
+                        <ha-icon
+                            class=${isPending ? 'dock-menu-action__loading' : ''}
+                            icon=${isPending ? 'mdi:loading' : action.icon}
+                        ></ha-icon>
+                        <span>${label}</span>
+                    </button>
+                `;
+            },
+        );
+    }
+
+    private getDockActions(entityId: string): {
+        action: (typeof DOCK_ACTIONS)[number];
+        entityId: string;
+        isActive: boolean;
+    }[] {
+        return DOCK_ACTIONS.flatMap((action) => {
+            const dockEntityId = relatedEntityIdBySuffix(
+                this.hass,
+                entityId,
+                'switch',
+                action.suffix,
+            );
+            const dockEntity = dockEntityId ? this.hass?.states[dockEntityId] : undefined;
+
+            return dockEntityId && dockEntity
+                ? [
+                      {
+                          action,
+                          entityId: dockEntityId,
+                          isActive: dockEntity.state === 'on',
+                      },
+                  ]
+                : [];
+        });
+    }
+
+    private async callSwitchService(
+        event: Event,
+        entityId: string,
+        isActive: boolean,
+    ): Promise<void> {
+        event.stopPropagation();
+
+        this.pendingDockEntityIds = [...this.pendingDockEntityIds, entityId];
+
+        try {
+            await this.hass?.callService('switch', isActive ? 'turn_off' : 'turn_on', {
+                entity_id: entityId,
+            });
+        } finally {
+            this.pendingDockEntityIds = this.pendingDockEntityIds.filter(
+                (pendingEntityId) => pendingEntityId !== entityId,
+            );
         }
     }
 

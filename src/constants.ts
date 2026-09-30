@@ -136,3 +136,21 @@ export const ROBOROCK_ATTENTION: RoborockAttentionDefinition[] = [
         activeState: 'on',
     },
 ];
+
+export const DOCK_ACTIONS = [
+    {
+        suffix: 'dock_mop_washing',
+        icon: 'mdi:washing-machine',
+        labelKey: 'mop_washing',
+    },
+    {
+        suffix: 'dock_mop_drying',
+        icon: 'mdi:weather-sunny',
+        labelKey: 'mop_drying',
+    },
+    {
+        suffix: 'dock_dust_emptying',
+        icon: 'mdi:delete-sweep-outline',
+        labelKey: 'dust_emptying',
+    },
+] as const;

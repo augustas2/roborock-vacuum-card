@@ -13,7 +13,15 @@
         "start": "Start cleaning",
         "pause": "Pause",
         "return_to_base": "Return to dock",
-        "locate": "Find me"
+        "locate": "Find me",
+        "more": "More actions",
+        "mop_washing": "Wash mops",
+        "stop_mop_washing": "Stop washing mops",
+        "mop_drying": "Dry mops",
+        "stop_mop_drying": "Stop drying mops",
+        "dust_emptying": "Empty dustbin",
+        "stop_dust_emptying": "Stop emptying dustbin",
+        "dust_emptying_in_progress": "Emptying dustbin"
     },
     "card": {
         "battery": "Battery",

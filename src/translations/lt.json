@@ -13,7 +13,15 @@
         "start": "Pradėti valyti",
         "pause": "Pauzė",
         "return_to_base": "Grįžti į stotelę",
-        "locate": "Surask mane"
+        "locate": "Surask mane",
+        "more": "Daugiau veiksmų",
+        "mop_washing": "Plauti šluostes",
+        "stop_mop_washing": "Stabdyti šluosčių plovimą",
+        "mop_drying": "Džiovinti šluostes",
+        "stop_mop_drying": "Stabdyti šluosčių džiovinimą",
+        "dust_emptying": "Ištuštinti dulkių talpą",
+        "stop_dust_emptying": "Stabdyti dulkių talpos tuštinimą",
+        "dust_emptying_in_progress": "Tuštinama dulkių talpa"
     },
     "card": {
         "battery": "Baterija",
