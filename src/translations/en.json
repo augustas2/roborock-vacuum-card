@@ -14,6 +14,8 @@
         "pause": "Pause",
         "return_to_base": "Return to dock",
         "locate": "Find me",
+        "fan_speed": "Fan speed",
+        "water_level": "Water level",
         "more": "More actions",
         "mop_washing": "Wash mops",
         "stop_mop_washing": "Stop washing mops",
@@ -22,6 +24,20 @@
         "dust_emptying": "Empty dustbin",
         "stop_dust_emptying": "Stop emptying dustbin",
         "dust_emptying_in_progress": "Emptying dustbin"
+    },
+    "options": {
+        "off": "Off",
+        "quiet": "Quiet",
+        "balanced": "Balanced",
+        "turbo": "Turbo",
+        "max": "Max",
+        "max_plus": "Max+",
+        "smart_mode": "Smart mode",
+        "custom": "Custom",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "custom_water_flow": "Custom water flow"
     },
     "card": {
         "battery": "Battery",

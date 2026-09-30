@@ -14,6 +14,8 @@
         "pause": "Pauzė",
         "return_to_base": "Grįžti į stotelę",
         "locate": "Surask mane",
+        "fan_speed": "Siurbimo galia",
+        "water_level": "Vandens kiekis",
         "more": "Daugiau veiksmų",
         "mop_washing": "Plauti šluostes",
         "stop_mop_washing": "Stabdyti šluosčių plovimą",
@@ -22,6 +24,20 @@
         "dust_emptying": "Ištuštinti dulkių talpą",
         "stop_dust_emptying": "Stabdyti dulkių talpos tuštinimą",
         "dust_emptying_in_progress": "Tuštinama dulkių talpa"
+    },
+    "options": {
+        "off": "Išjungta",
+        "quiet": "Tylus",
+        "balanced": "Subalansuotas",
+        "turbo": "Turbo",
+        "max": "Maksimalus",
+        "max_plus": "Maksimalus+",
+        "smart_mode": "Išmanusis režimas",
+        "custom": "Pasirinktinis",
+        "low": "Mažas",
+        "medium": "Vidutinis",
+        "high": "Didelis",
+        "custom_water_flow": "Pasirinktinis vandens kiekis"
     },
     "card": {
         "battery": "Baterija",

@@ -242,7 +242,7 @@ export const cardStyles = css`
         --mdc-icon-size: 26px;
     }
 
-    .dock-menu-trigger {
+    .dropdown-menu-trigger {
         position: relative;
     }
 

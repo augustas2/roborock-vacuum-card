@@ -25,6 +25,7 @@ export const ACTION_ICONS_MAP: Record<CardAction, string> = {
 export const enum VacuumFeature {
     Pause = 4,
     ReturnToBase = 16,
+    FanSpeed = 32,
     Locate = 512,
     Start = 8192,
 }
@@ -154,3 +155,5 @@ export const DOCK_ACTIONS = [
         labelKey: 'dust_emptying',
     },
 ] as const;
+
+export const HIDDEN_CONTROL_OPTIONS = ['custom', 'custom_water_flow'];

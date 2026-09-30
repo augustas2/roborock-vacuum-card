@@ -17,6 +17,7 @@ import {
     CARD_TYPE,
     DOCK_ACTIONS,
     DISABLED_BY_ACTION,
+    HIDDEN_CONTROL_OPTIONS,
     ROBOROCK_ATTENTION,
     ROBOROCK_DETAILS,
     ROBOROCK_STATUS_MAP,
@@ -55,12 +56,17 @@ const relatedEntityIdBySuffix = (
 
     const deviceSlug = entityId.slice('vacuum.'.length);
 
-    return Object.keys(hass.states).find(
-        (candidateId) =>
-            candidateId.startsWith(`${domain}.`) &&
-            candidateId.includes(`_${deviceSlug}_`) &&
-            candidateId.endsWith(`_${suffix}`),
-    );
+    return Object.keys(hass.states).find((candidateId) => {
+        if (!candidateId.startsWith(`${domain}.`)) return false;
+
+        const objectId = candidateId.slice(domain.length + 1);
+
+        return (
+            (objectId.startsWith(`${deviceSlug}_`) ||
+                objectId.includes(`_${deviceSlug}_`)) &&
+            objectId.endsWith(`_${suffix}`)
+        );
+    });
 };
 
 const entityState = (stateObj: HassEntity | undefined): string | undefined => {
@@ -184,6 +190,10 @@ export class RoborockVacuumCard extends LitElement {
 
     @state() private showDockActions = false;
 
+    @state() private showFanSpeedMenu = false;
+
+    @state() private showWaterLevelMenu = false;
+
     @state() private pendingDockEntityIds: string[] = [];
 
     private pendingEntityState: string | undefined;
@@ -194,11 +204,16 @@ export class RoborockVacuumCard extends LitElement {
             .some(
                 (element) =>
                     element instanceof HTMLElement &&
-                    element.classList.contains('dock-menu-trigger'),
+                    element.classList.contains('dropdown-menu-trigger'),
             );
 
-        if (this.showDockActions && !isInsideDockMenu) {
+        if (
+            (this.showDockActions || this.showFanSpeedMenu || this.showWaterLevelMenu) &&
+            !isInsideDockMenu
+        ) {
             this.showDockActions = false;
+            this.showFanSpeedMenu = false;
+            this.showWaterLevelMenu = false;
         }
     };
 
@@ -478,7 +493,6 @@ export class RoborockVacuumCard extends LitElement {
             { action: 'start', feature: VacuumFeature.Start },
             { action: 'pause', feature: VacuumFeature.Pause },
             { action: 'return_to_base', feature: VacuumFeature.ReturnToBase },
-            { action: 'locate', feature: VacuumFeature.Locate },
         ];
 
         const vacuumActions = allActions
@@ -505,11 +519,14 @@ export class RoborockVacuumCard extends LitElement {
                 `;
             });
 
-        const hasDockActions = this.getDockActions(entityId).length > 0;
+        const settingMenus = this.renderSettingMenus(stateObj, entityId);
+        const hasMoreActions =
+            hasFeature(stateObj, VacuumFeature.Locate) ||
+            this.getDockActions(entityId).length > 0;
 
-        return hasDockActions
-            ? [...vacuumActions, this.renderDockMenu(entityId)]
-            : vacuumActions;
+        return hasMoreActions
+            ? [...vacuumActions, ...settingMenus, this.renderDockMenu(entityId, stateObj)]
+            : [...vacuumActions, ...settingMenus];
     }
 
     private async callVacuumService(
@@ -539,11 +556,148 @@ export class RoborockVacuumCard extends LitElement {
         }
     }
 
-    private renderDockMenu(entityId: string): TemplateResult {
+    private renderSettingMenus(
+        stateObj: HassEntity | undefined,
+        entityId: string,
+    ): TemplateResult[] {
+        const fanSpeedOptions = this.entityOptions(stateObj, 'fan_speed_list');
+        const waterEntityId = relatedEntityIdBySuffix(
+            this.hass,
+            entityId,
+            'select',
+            'mop_intensity',
+        );
+        const waterEntity = waterEntityId ? this.hass?.states[waterEntityId] : undefined;
+        const waterOptions = this.entityOptions(waterEntity, 'options');
+
+        return [
+            ...(hasFeature(stateObj, VacuumFeature.FanSpeed) && fanSpeedOptions.length
+                ? [
+                      this.renderOptionMenu(
+                          'fan',
+                          'mdi:fan',
+                          localize('actions.fan_speed', this.hass?.language),
+                          fanSpeedOptions,
+                          stateObj?.attributes.fan_speed,
+                          (option) => this.callFanSpeedService(entityId, option),
+                      ),
+                  ]
+                : []),
+            ...(waterEntityId && waterOptions.length
+                ? [
+                      this.renderOptionMenu(
+                          'water',
+                          'mdi:water',
+                          localize('actions.water_level', this.hass?.language),
+                          waterOptions,
+                          waterEntity?.state,
+                          (option) => this.callSelectOptionService(waterEntityId, option),
+                      ),
+                  ]
+                : []),
+        ];
+    }
+
+    private renderOptionMenu(
+        menu: 'fan' | 'water',
+        icon: string,
+        label: string,
+        options: string[],
+        selected: unknown,
+        onSelect: (option: string) => Promise<void>,
+    ): TemplateResult {
+        const isOpen = menu === 'fan' ? this.showFanSpeedMenu : this.showWaterLevelMenu;
+
+        return html`
+            <div class="dropdown-menu-trigger">
+                <button
+                    class="action-button ${isOpen ? 'action-button--active' : ''}"
+                    type="button"
+                    title=${label}
+                    aria-label=${label}
+                    aria-expanded=${String(isOpen)}
+                    @click=${() => this.toggleMenu(menu)}
+                >
+                    <ha-icon icon=${icon}></ha-icon>
+                </button>
+                ${
+                    isOpen
+                        ? html`<div class="dock-menu" role="menu">
+                              ${options.map(
+                                  (option) =>
+                                      html`<button
+                                          class="dock-menu-action ${
+                                              selected === option
+                                                  ? 'dock-menu-action--active'
+                                                  : ''
+                                          }"
+                                          type="button"
+                                          @click=${() => void onSelect(option)}
+                                      >
+                                          <span
+                                              >${localize(`options.${option}`, this.hass?.language)}</span
+                                          >
+                                      </button>`,
+                              )}
+                          </div>`
+                        : nothing
+                }
+            </div>
+        `;
+    }
+
+    private entityOptions(entity: HassEntity | undefined, attribute: string): string[] {
+        const options = entity?.attributes[attribute];
+
+        return Array.isArray(options)
+            ? options.filter(
+                  (option): option is string =>
+                      typeof option === 'string' &&
+                      !HIDDEN_CONTROL_OPTIONS.includes(option),
+              )
+            : [];
+    }
+
+    private toggleMenu(menu: 'dock' | 'fan' | 'water'): void {
+        const isOpen =
+            menu === 'dock'
+                ? this.showDockActions
+                : menu === 'fan'
+                  ? this.showFanSpeedMenu
+                  : this.showWaterLevelMenu;
+
+        this.showDockActions = menu === 'dock' && !isOpen;
+        this.showFanSpeedMenu = menu === 'fan' && !isOpen;
+        this.showWaterLevelMenu = menu === 'water' && !isOpen;
+    }
+
+    private async callFanSpeedService(entityId: string, option: string): Promise<void> {
+        this.toggleMenu('fan');
+        await this.hass?.callService('vacuum', 'set_fan_speed', {
+            entity_id: entityId,
+            fan_speed: option,
+        });
+    }
+
+    private async callSelectOptionService(
+        entityId: string,
+        option: string,
+    ): Promise<void> {
+        this.toggleMenu('water');
+        await this.hass?.callService('select', 'select_option', {
+            entity_id: entityId,
+            option,
+        });
+    }
+
+    private renderDockMenu(
+        entityId: string,
+        stateObj: HassEntity | undefined,
+    ): TemplateResult {
         const label = localize('actions.more', this.hass?.language);
 
         return html`
-            <div class="dock-menu-trigger">
+            <div class="dropdown-menu-trigger dock-menu-trigger">
                 <button
                     class="action-button ${this.showDockActions ? 'action-button--active' : ''}"
                     type="button"
@@ -551,7 +705,7 @@ export class RoborockVacuumCard extends LitElement {
                     aria-label=${label}
                     aria-expanded=${String(this.showDockActions)}
                     @click=${() => {
-                        this.showDockActions = !this.showDockActions;
+                        this.toggleMenu('dock');
                     }}
                 >
                     <ha-icon icon="mdi:dots-horizontal"></ha-icon>
@@ -559,6 +713,30 @@ export class RoborockVacuumCard extends LitElement {
                 ${
                     this.showDockActions
                         ? html`<div class="dock-menu" role="menu">
+                              ${
+                                  hasFeature(stateObj, VacuumFeature.Locate)
+                                      ? html`<button
+                                            class="dock-menu-action"
+                                            type="button"
+                                            @click=${(event: Event) => {
+                                                this.showDockActions = false;
+                                                void this.callVacuumService(
+                                                    event,
+                                                    'locate',
+                                                    entityId,
+                                                );
+                                            }}
+                                        >
+                                            <ha-icon icon="mdi:map-marker"></ha-icon>
+                                            <span
+                                                >${localize(
+                                                    'actions.locate',
+                                                    this.hass?.language,
+                                                )}</span
+                                            >
+                                        </button>`
+                                      : nothing
+                              }
                               ${this.renderDockActions(entityId)}
                           </div>`
                         : nothing
