@@ -4,7 +4,7 @@
 
 A Home Assistant dashboard card for `vacuum.*` entities, designed for Roborock robot vacuums. It shows the current vacuum state, battery level, update time, Roborock-specific cleaning details and attention alerts, product image, and state-aware controls.
 
-![Roborock Vacuum Card](https://raw.githubusercontent.com/augustas2/roborock-vacuum-card/main/src/assets/card.png)
+![Roborock Vacuum Card](https://raw.githubusercontent.com/augustas2/roborock-vacuum-card/master/src/assets/card.png)
 
 ## Features
 
