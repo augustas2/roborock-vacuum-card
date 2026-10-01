@@ -106,13 +106,11 @@ export const cardStyles = css`
         display: flex;
         gap: var(--ha-space-2, 8px);
         align-items: center;
-        width: 100%;
         margin-top: var(--ha-space-3, 12px);
         padding: var(--ha-space-2, 8px) var(--ha-space-3, 12px);
         border-radius: var(--ha-border-radius-md, 8px);
         font-size: var(--ha-font-size-m, 16px);
         font-weight: var(--ha-font-weight-medium, 500);
-        text-align: left;
     }
 
     .attention--warning {

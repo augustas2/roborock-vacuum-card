@@ -59,8 +59,8 @@
         "vacuum_error": "Vacuum error: {value}",
         "dock_error": "Dock error: {value}",
         "water_shortage": "Water shortage",
-        "empty_dirty_water": "Empty the dirty-water tank",
-        "fill_clean_water": "Fill the clean-water tank"
+        "empty_dirty_water": "Dirty-water tank is full/not installed",
+        "fill_clean_water": "Clean-water tank is empty/not installed"
     },
     "errors": {
         "entity_required": "A vacuum entity is required",
