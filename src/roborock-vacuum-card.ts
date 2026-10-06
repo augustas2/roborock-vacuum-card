@@ -758,7 +758,6 @@ export class RoborockVacuumCard extends LitElement {
                     <button
                         class="dock-menu-action ${isActive ? 'dock-menu-action--active' : ''}"
                         type="button"
-                        title=${label}
                         aria-label=${label}
                         aria-busy=${String(isPending)}
                         ?disabled=${isPending}

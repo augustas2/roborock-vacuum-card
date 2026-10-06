@@ -97,22 +97,6 @@ export const ROBOROCK_DETAILS: RoborockDetailDefinition[] = [
 
 export const ROBOROCK_ATTENTION: RoborockAttentionDefinition[] = [
     {
-        domain: 'sensor',
-        suffix: 'vacuum_error',
-        icon: 'mdi:robot-vacuum-alert',
-        labelKey: 'vacuum_error',
-        severity: 'error',
-        inactiveStates: ['none'],
-    },
-    {
-        domain: 'sensor',
-        suffix: 'dock_dock_error',
-        icon: 'mdi:alert-octagon-outline',
-        labelKey: 'dock_error',
-        severity: 'error',
-        inactiveStates: ['ok'],
-    },
-    {
         domain: 'binary_sensor',
         suffix: 'water_shortage',
         icon: 'mdi:water-alert',
@@ -135,6 +119,22 @@ export const ROBOROCK_ATTENTION: RoborockAttentionDefinition[] = [
         labelKey: 'fill_clean_water',
         severity: 'warning',
         activeState: 'on',
+    },
+    {
+        domain: 'sensor',
+        suffix: 'vacuum_error',
+        icon: 'mdi:robot-vacuum-alert',
+        labelKey: 'vacuum_error',
+        severity: 'error',
+        inactiveStates: ['none'],
+    },
+    {
+        domain: 'sensor',
+        suffix: 'dock_dock_error',
+        icon: 'mdi:alert-octagon-outline',
+        labelKey: 'dock_error',
+        severity: 'error',
+        inactiveStates: ['ok'],
     },
 ];
 

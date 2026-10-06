@@ -58,7 +58,7 @@
     "attention": {
         "vacuum_error": "Siurblio klaida: {value}",
         "dock_error": "Stotelės klaida: {value}",
-        "water_shortage": "Trūksta vandens",
+        "water_shortage": "Robote trūksta vandens",
         "empty_dirty_water": "Nešvaraus vandens talpa pilna arba neįdėta",
         "fill_clean_water": "Švaraus vandens talpa tuščia arba neįdėta"
     },
